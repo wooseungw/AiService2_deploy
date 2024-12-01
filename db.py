@@ -4,11 +4,15 @@ from cryptography.fernet import Fernet, InvalidToken
 import os
 import json
 
+import streamlit as st
+
+
+
 # secret.key 파일에서 키를 로드하는 함수
 def load_fernet_key():
     # secret.key 파일에서 키 로드
-    with open("secret.key", "rb") as key_file:
-        key = key_file.read()
+    
+    key = st.secrets["fernet"]
     return Fernet(key)
 
 # Fernet 키 로드 및 암호화 객체 초기화
