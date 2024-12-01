@@ -31,6 +31,7 @@ if 'chatbot' not in st.session_state:
     # 개인정보가 없으면 안내 메시지 출력
     if not existing_info:
         st.warning("개인정보가 없습니다. 개인정보를 입력해주세요.")
+        existing_info = None
 
     # GPT 챗봇 객체를 세션 상태에 저장
     st.session_state.chatbot = GPT(
