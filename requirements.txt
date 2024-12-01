@@ -9,7 +9,6 @@ beautifulsoup4
 torch  
 torchvision 
 ultralytics 
-opencv-python-headless
 
 openai
 langchain
