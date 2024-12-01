@@ -3,10 +3,9 @@ import os
 from db import add_user_image, get_user_images, delete_user_image, add_image_attributes
 from PIL import Image
 import uuid
-import torch
-from ultralytics import YOLO
-from yolo_w_multi_classhead_vis import YOLO_MultiClass, process_labels_to_list, category_encodings, attribute_translation, category_translation
-from torchvision import transforms
+
+
+
 from fashionDetector import FashionDetector
 
 # 카테고리별 인코딩
