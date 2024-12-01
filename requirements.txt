@@ -4,6 +4,12 @@ cryptography==43.0.1
 SQLAlchemy==2.0.35
 pyodbc
 python-dotenv
+beautifulsoup4
+
+torch  
+torchvision 
+ultralytics 
+opencv-python
 
 openai
 langchain
