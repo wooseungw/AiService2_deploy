@@ -2,26 +2,16 @@ import os
 import json
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import cv2
-from torchvision import transforms
+
 from PIL import Image
 from ultralytics import YOLO
 from ultralytics.nn.modules.conv import Conv
-import wandb
-import matplotlib.pyplot as plt
-from matplotlib import font_manager, rc
-import matplotlib
-import numpy as np
-import seaborn as sns
 
-# 한글 폰트 경로 설정 (Windows의 경우)
-font_path = "c:/Windows/Fonts/malgun.ttf"
-font_name = font_manager.FontProperties(fname=font_path).get_name()
-plt.rc('font', family=font_name)
-# 유니코드 마이너스 설정 (마이너스 기호 깨짐 방지)
-matplotlib.rcParams['axes.unicode_minus'] = False
+import matplotlib.pyplot as plt
+
+
+
+
 
 
 # 카테고리별 인코딩 (한국어)
