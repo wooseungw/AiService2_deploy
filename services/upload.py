@@ -79,7 +79,7 @@ def render():
         image_id = add_user_image(user_id, img_name, img_url)
         
         # FashionDetector 초기화
-        detection_model_path = "./runs/detect/l_640_dropout025_more_cat_3/weights/best.pt"
+        detection_model_path = "./best.pt"
         attr_model_path = "yolo11l.pt"
         attr_weights_path = "./fashion_classification_l/best_model.pt"
 
