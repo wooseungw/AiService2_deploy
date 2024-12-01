@@ -18,6 +18,8 @@ def logout():
     st.session_state['api_key'] = ""
     st.rerun()
 
+
+
 login_page = st.Page("services/login.py", title="Log in", icon=":material/login:")
 logout_page = st.Page(logout, title="Log out", icon=":material/logout:")
 chatbot = st.Page(
