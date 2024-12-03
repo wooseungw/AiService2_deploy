@@ -85,27 +85,29 @@ def render():
         # 파일 업로드
         with open(img_url, "rb") as img_file:
             files = {"file": img_file}
-            results = requests.post(url, files=files)
-        # 결과 출력
-        if results.status_code == 200:
+            response = requests.post(url, files=files)
+
+        # 결과 확인
+        if response.status_code == 200:
             print("Success:")
-            print(results.json())  # JSON 결과 출력
+            results = response.json()  # JSON 데이터로 변환
+            print(results)  # JSON 출력
+
+            # 결과를 데이터베이스에 저장
+            all_attributes = []
+            for category in ['outer', 'top', 'bottom', 'onepiece']:
+                for item in results.get(category, []):  # JSON에서 데이터 가져오기
+                    item_data = {
+                        'category': item['category'],
+                        'bounding_box': item['bounding_box'],
+                        'confidence': item['confidence'],
+                        'attributes': item['attributes']
+                    }
+                    all_attributes.append(item_data)
+
+            add_image_attributes(image_id, all_attributes)
         else:
-            print(f"Error {results.status_code}: {results.text}")
-        
-        # 결과를 데이터베이스에 저장
-        all_attributes = []
-        for category in ['outer', 'top', 'bottom', 'onepiece']:
-            for item in results.get(category, []):
-                item_data = {
-                    'category': item['category'],
-                    'bounding_box': item['bounding_box'],
-                    'confidence': item['confidence'],
-                    'attributes': item['attributes']
-                }
-                all_attributes.append(item_data)
-        
-        add_image_attributes(image_id, all_attributes)
+            print(f"Error {response.status_code}: {response.text}")
         
         st.success("FashionDetector 결과가 저장되었습니다.")
         
