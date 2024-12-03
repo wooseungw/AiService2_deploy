@@ -1,4 +1,5 @@
-.streamlit/
+__pycache__/
+secrets.toml
 fashion_classification_l/
 best.pt
 myserver.py
