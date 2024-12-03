@@ -1,0 +1,4 @@
+.streamlit/
+fashion_classification_l/
+best.pt
+myserver.py
