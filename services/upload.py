@@ -3,6 +3,7 @@ import os
 from db import add_user_image, get_user_images, delete_user_image, add_image_attributes
 from PIL import Image
 import uuid
+import requests
 
 
 
@@ -60,6 +61,8 @@ def save_and_resize_image(uploaded_file, output_size=(640, 640)):
     return unique_filename, save_path  # 이미지 파일 이름과 경로 반환
     
 def render():
+    url = st.secrets["url"]
+    
     st.title("이미지 올리기")
     
     user_id = st.session_state.get('id')
@@ -78,21 +81,17 @@ def render():
         # 데이터베이스에 이미지 정보 추가 후 이미지 ID 가져오기
         image_id = add_user_image(user_id, img_name, img_url)
         
-        # FashionDetector 초기화
-        detection_model_path = "./best.pt"
-        attr_model_path = "yolo11l.pt"
-        attr_weights_path = "./fashion_classification_l/best_model.pt"
 
-        detector = FashionDetector(
-            detection_model_path=detection_model_path,
-            attr_model_path=attr_model_path,
-            attr_weights_path=attr_weights_path,
-            categories=categories,
-            category_encodings=category_encodings
-        )
-        
-        # 이미지 처리 및 결과 얻기
-        results = detector.process(img_url)
+        # 파일 업로드
+        with open(img_url, "rb") as img_file:
+            files = {"file": img_file}
+            results = requests.post(url, files=files)
+        # 결과 출력
+        if results.status_code == 200:
+            print("Success:")
+            print(results.json())  # JSON 결과 출력
+        else:
+            print(f"Error {results.status_code}: {results.text}")
         
         # 결과를 데이터베이스에 저장
         all_attributes = []

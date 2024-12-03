@@ -1,3 +1,16 @@
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+import shutil
+
+import os
+
+app = FastAPI()
+
+# 모델 경로 설정
+detection_model_path = "best.pt"
+attr_model_path = "yolo11l.pt"
+attr_weights_path = "./fashion_classification_l/best_model.pt"
+
 import torch
 
 from PIL import Image
@@ -184,22 +197,26 @@ class FashionDetector:
         print(json.dumps(results, indent=4, ensure_ascii=False))
 
 
-# if __name__ == "__main__":
-#     # 모델 경로
-#     detection_model_path = "./runs/detect/l_640_dropout025_more_cat_3/weights/best.pt"
-#     attr_model_path = "yolo11l.pt"
-#     attr_weights_path = "./fashion_classification_l/best_model.pt"
+detector = FashionDetector(detection_model_path, attr_model_path, attr_weights_path, categories, category_encodings)
+@app.post("/detect/")
+async def detect_fashion(file: UploadFile = File(...)):
+    # 이미지 임시 저장
+    temp_file = f"temp_{file.filename}"
+    with open(temp_file, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-#     # FashionDetector 초기화
-#     detector = FashionDetector(
-#         detection_model_path=detection_model_path,
-#         attr_model_path=attr_model_path,
-#         attr_weights_path=attr_weights_path,
-#         categories=categories,
-#         category_encodings=category_encodings
-#     )
+    try:
+        # FashionDetector로 이미지 처리
+        results = detector.process(temp_file)
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
+    finally:
+        # 임시 파일 삭제
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
 
-#     # 이미지 처리 및 결과 출력
-#     image_path = "datasets/images/val/000002.jpg"
-#     results = detector.process(image_path)
-#     detector.display_results(results)
+    # JSON 결과 반환
+    return JSONResponse(content=results)
