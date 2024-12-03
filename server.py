@@ -199,24 +199,17 @@ class FashionDetector:
 
 detector = FashionDetector(detection_model_path, attr_model_path, attr_weights_path, categories, category_encodings)
 @app.post("/detect/")
-async def detect_fashion(file: UploadFile = File(...)):
-    # 이미지 임시 저장
+async def detect(file: UploadFile = File(...)):
     temp_file = f"temp_{file.filename}"
     with open(temp_file, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        buffer.write(file.file.read())
 
     try:
-        # FashionDetector로 이미지 처리
+        # FashionDetector를 사용하여 이미지 처리
         results = detector.process(temp_file)
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e)}
-        )
-    finally:
-        # 임시 파일 삭제
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        os.remove(temp_file)  # 임시 파일 삭제
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
-    # JSON 결과 반환
+    os.remove(temp_file)  # 임시 파일 삭제
     return JSONResponse(content=results)

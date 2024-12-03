@@ -7,7 +7,7 @@ import requests
 
 
 
-from fashionDetector import FashionDetector
+
 
 # 카테고리별 인코딩
 categories = {
@@ -123,7 +123,7 @@ def render():
                 # 튜플의 네 가지 요소를 모두 받습니다
                 image_id, filename, filepath, upload_date = user_images[i + j]
                 with col:
-                    st.image(filepath, caption=f"{filename[:10]}... ({upload_date})", use_container_width=True)
+                    st.image(filepath, caption=f"{filename[:10]}... ({upload_date})")
                     if st.button("삭제", key=f"delete_{filename}"):
                         if delete_user_image(user_id, image_id):
                             st.success("이미지가 삭제되었습니다.")
