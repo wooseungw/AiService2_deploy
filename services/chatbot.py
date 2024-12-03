@@ -67,7 +67,7 @@ def show_chatbot_page():
     for index, img in enumerate(current_images):
         image_id, filename, filepath, upload_date = img  # 수정된 부분
         with columns[index % num_columns]:
-            st.image(filepath, use_container_width=True)
+            st.image(filepath)
             # 선택 버튼
             if st.button(f"선택", key=f"select_{index}"):
                 selected_image = filepath
