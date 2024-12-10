@@ -66,10 +66,10 @@ def render():
                     img_with_bbox = draw_bbox_on_image(filepath, bboxes, categories)
                     
                     with col1:
-                        st.image(img_with_bbox, width=300)
+                        st.image(img_with_bbox, width=200)
                 else:
                     with col1:
-                        st.image(filepath, width=300)
+                        st.image(filepath, width=200)
             
             with col2:
                 attributes = get_image_attributes(image_id)
