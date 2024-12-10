@@ -1,4 +1,5 @@
 import requests
+import json
 import streamlit as st
 
 # secret.key 파일에서 키를 로드하는 함수
@@ -8,6 +9,8 @@ def load_weather_key():
     return key
 
 API_KEY = load_weather_key()
+
+# 한글 도시명 매핑
 mapping = {
     'Seoul': '서울',
     'Busan': '부산',
@@ -32,44 +35,63 @@ mapping = {
 # 사용자의 위치 정보 가져오기
 def get_location():
     try:
-        # IP 주소 확인 (ipinfo.io 무료 API 사용 예제)
+        # IP 주소를 기반으로 위치 정보 확인 (ipinfo.io 무료 API 사용 예제)
         ip_response = requests.get("https://ipinfo.io/json")
         ip_data = ip_response.json()
 
-        # 위치 정보 추출
-        city = ip_data.get("city")
-        if city:
-            city_kor = mapping.get(city, city)  # 한글로 변환된 도시명
-            st.session_state['location'] = city_kor
-            return city_kor
+        # 위도와 경도 추출
+        loc = ip_data.get("loc")
+        if loc:
+            lat, lon = map(float, loc.split(","))
+            return lat, lon
         else:
-            st.error("도시 정보를 가져올 수 없습니다.")
-            return None
+            print("위치 정보를 가져올 수 없습니다.")
+            return None, None
+    except requests.RequestException as e:
+        print(f"위치 정보를 가져오는 데 실패했습니다: {e}")
+        return None, None
 
-    except requests.RequestException:
-        st.error("위치 정보를 가져오는 데 실패했습니다.")
-        return None
-
-def get_weather(location):
+# 날씨 정보 가져오기
+def get_weather(lat, lon):
     try:
-        # Weatherstack API를 사용하여 날씨 정보 가져오기
-        url = f"http://api.weatherstack.com/current?access_key={API_KEY}&query={location}"
+        # OpenWeatherMap API를 사용하여 날씨 정보 가져오기
+        url = f"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
-            if 'current' in data:
+            current = data.get('current', {})
+            if current:
                 weather_info = {
-                    'location': data['location']['name'],
-                    'temperature': data['current']['temperature'],
-                    'condition': data['current']['weather_descriptions'][0]
+                    'temperature': current.get('temp'),
+                    'condition': current['weather'][0]['description'] if 'weather' in current else None,
+                    'humidity': current.get('humidity'),
+                    'wind_speed': current.get('wind_speed')
                 }
                 return weather_info
             else:
-                st.error("날씨 정보를 가져오는 데 실패했습니다.")
+                print("날씨 정보를 가져올 수 없습니다.")
                 return None
         else:
-            st.error("날씨 정보를 가져오는 데 실패했습니다.")
+            print(f"날씨 정보를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
             return None
-    except requests.RequestException:
-        st.error("날씨 정보를 가져오는 데 실패했습니다.")
+    except requests.RequestException as e:
+        print(f"날씨 정보를 가져오는 데 실패했습니다: {e}")
         return None
+
+# 통합 테스트
+def test_weather():
+    lat, lon = get_location()
+    if lat is not None and lon is not None:
+        weather_info = get_weather(lat, lon)
+        if weather_info:
+            print(f"현재 위치의 온도: {weather_info['temperature']}°C")
+            print(f"현재 위치의 날씨 상태: {weather_info['condition']}")
+            print(f"습도: {weather_info['humidity']}%")
+            print(f"풍속: {weather_info['wind_speed']}m/s")
+        else:
+            print("날씨 정보를 가져오지 못했습니다.")
+    else:
+        print("위치 정보를 가져오지 못했습니다.")
+
+if __name__ == "__main__":
+    test_weather()
