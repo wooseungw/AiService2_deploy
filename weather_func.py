@@ -47,6 +47,8 @@ def get_location():
 class NaverWeatherCrawler:
     def __init__(self, location):
         self.base_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query="
+        self.base_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query="
+        
         self.location = location
 
     def get_weather(self):
