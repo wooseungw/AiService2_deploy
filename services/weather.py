@@ -1,5 +1,5 @@
 import streamlit as st
-from weather_func import get_location, get_weather, add_weather_comments
+from weather_func import get_location, get_weather
 
 def add_weather_comments(weather):
     temperature = weather['temperature']
