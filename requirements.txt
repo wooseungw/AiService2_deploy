@@ -9,3 +9,6 @@ beautifulsoup4
 openai
 langchain
 langchain-community
+opencv-python
+opencv-python-headless
+numpy
