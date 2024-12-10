@@ -32,6 +32,8 @@ if 'chatbot' not in st.session_state:
         st.warning("개인정보가 없습니다. 개인정보를 입력해주세요.")
         existing_info = None
 
+
+st.session_state.api_key = get_api_key(st.session_state.get('username', ''))
 # GPT 챗봇 객체를 세션 상태에 저장
 st.session_state.chatbot = GPT(
     api_key=st.session_state.api_key,
