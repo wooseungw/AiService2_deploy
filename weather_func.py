@@ -46,7 +46,7 @@ def get_location():
             return lat, lon
         else:
             print("위치 정보를 가져올 수 없습니다.")
-            return None, None
+            return 37.5660, 126.9784
     except requests.RequestException as e:
         print(f"위치 정보를 가져오는 데 실패했습니다: {e}")
         return None, None
