@@ -34,13 +34,14 @@ def get_location():
         city = ip_data.get("city")
         if city:
             city_kor = mapping.get(city, city)  # 한글로 변환된 도시명
+            st.session_state['location'] = city_kor
             return city_kor
         else:
-
+            st.error("도시 정보를 가져올 수 없습니다.")
             return None
 
     except requests.RequestException:
-        
+        st.error("위치 정보를 가져오는 데 실패했습니다.")
         return None
 
 class NaverWeatherCrawler:
@@ -74,3 +75,4 @@ class NaverWeatherCrawler:
 def get_weather(location):
     crawler = NaverWeatherCrawler(location=location)
     return crawler.get_weather()
+
