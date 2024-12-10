@@ -6,17 +6,6 @@ pyodbc
 python-dotenv
 beautifulsoup4
 
-torch  
-torchvision 
-ultralytics 
-opencv-python-headless
-
 openai
 langchain
 langchain-community
-azure-identity>=1.6.1
-azure-mgmt-rdbms
-mysql-connector-python
-azure-mgmt-resource>=18.0.0
-azure-mgmt-containerregistry>=3.0.0
-azure-mgmt-web>=2.0.0
