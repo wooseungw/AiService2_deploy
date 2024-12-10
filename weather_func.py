@@ -49,7 +49,7 @@ def get_location():
             return 37.5660, 126.9784
     except requests.RequestException as e:
         print(f"위치 정보를 가져오는 데 실패했습니다: {e}")
-        return None, None
+        return 37.5660, 126.9784
 
 # 날씨 정보 가져오기
 def get_weather(lat, lon):
