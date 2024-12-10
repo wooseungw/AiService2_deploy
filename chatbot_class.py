@@ -1,52 +1,29 @@
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.memory import ChatMessageHistory
-
 from openai import OpenAI
 import base64
-
-from db import get_all_clothing_info, get_image_attributes
 import json
 import requests
-
-
-# 대화 기록 예시
-'''
-st.session_state['chat_history'] = [
-  {
-    "role": "system", 
-    "content": [{"type": "text", "text": "You are a helpful assistant."}]
-  },
-  {
-    "role": "user",
-    "content": [
-      {"type": "image_url", "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Danbo_Cheese.jpg"}},
-      {"type": "text", "text": "What is this?"}
-    ]
-  }
-]
-'''
-import requests
-import base64
+from db import get_all_clothing_info, get_image_attributes
 
 class GPT:
-    def __init__(self, api_key, weather, user_info, model="gpt-4o-mini"):
+    def __init__(self, api_key, weather=None, user_info=None, model="gpt-4o-mini"):
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {api_key}"
         }
         self.model = model
         
-        # user_info 기본값 설정 (이전과 동일)
-        if not user_info or len(user_info) < 8:
-            user_name = "사용자"
-            birth_date = "알 수 없음"
-            gender = "알 수 없음"
-            height = "알 수 없음"
-            weight = "알 수 없음"
-            personal_color = "알 수 없음"
-            mbti = "알 수 없음"
-        else:
+        # user_info 기본값 설정
+        user_name = "사용자"
+        birth_date = "알 수 없음"
+        gender = "알 수 없음"
+        height = "알 수 없음"
+        weight = "알 수 없음"
+        personal_color = "알 수 없음"
+        mbti = "알 수 없음"
+        user_id = None
+
+        if user_info and len(user_info) >= 8:
+            user_id = user_info[0]
             user_name = user_info[1]
             birth_date = user_info[2]
             gender = user_info[3]
@@ -56,10 +33,14 @@ class GPT:
             mbti = user_info[7]
 
         # DB에서 모든 의류 정보 가져오기
-        user_id = user_info[0]
-        clothing_info = get_all_clothing_info(user_id)
+        clothing_info = get_all_clothing_info(user_id) if user_id else []
         clothing_info_str = self._format_clothing_info(clothing_info)
-        print(clothing_info_str)
+
+        # weather 기본값 설정
+        location = weather['location'] if weather and 'location' in weather else "알 수 없음"
+        temperature = weather['temperature'] if weather and 'temperature' in weather else "알 수 없음"
+        condition = weather['condition'] if weather and 'condition' in weather else "알 수 없음"
+
         # 시스템 프롬프트 개선
         SYS_PROMPT = f"""
 [시스템 정보]
@@ -71,9 +52,9 @@ class GPT:
 사용자 퍼스널컬러: {personal_color}
 사용자 MBTI: {mbti}
 
-위치: {weather['location']}
-온도: {weather['temperature']}°C
-날씨: {weather['condition']}
+위치: {location}
+온도: {temperature}°C
+날씨: {condition}
 
 사용자의 의류 정보:
 {clothing_info_str}
@@ -110,6 +91,7 @@ class GPT:
             info_str += "\n"
             
         return info_str
+
     def get_selected_image_info(self, image_path):
         """선택된 이미지의 의류 속성 정보를 가져오는 함수"""
         # DB에서 이미지 속성 정보 조회
@@ -129,6 +111,7 @@ class GPT:
             info_str += "\n"
             
         return info_str
+
     def generate(self, text_prompt=None, img_prompt=None):
         if not text_prompt and not img_prompt:
             return "텍스트 또는 이미지를 입력해주세요."
@@ -155,7 +138,7 @@ class GPT:
         
         self.messages.append({'role': 'user', 'content': contents})
         
-        # API 요청 및 응답 처리 (이전과 동일)
+        # API 요청 및 응답 처리
         payload = {
             "model": self.model,
             "messages": self.messages,
@@ -251,3 +234,20 @@ class Chatbot:
         self.history.add_ai_message(response.content)
         
         return response.content
+
+
+'''
+st.session_state['chat_history'] = [
+  {
+    "role": "system", 
+    "content": [{"type": "text", "text": "You are a helpful assistant."}]
+  },
+  {
+    "role": "user",
+    "content": [
+      {"type": "image_url", "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Danbo_Cheese.jpg"}},
+      {"type": "text", "text": "What is this?"}
+    ]
+  }
+]
+'''
