@@ -3,3 +3,4 @@ secrets.toml
 fashion_classification_l/
 best.pt
 myserver.py
+yolo11l.pt
