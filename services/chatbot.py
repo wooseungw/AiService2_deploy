@@ -17,16 +17,15 @@ if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
 # API 키 초기화
-# API 키 초기화
 if 'api_key' not in st.session_state:
     st.session_state.api_key = get_api_key(st.session_state.get('username', ''))
-
 
 # 챗봇 객체를 한 번만 생성하도록 변경
 if 'chatbot' not in st.session_state:
     user_id = st.session_state.get('id', '')
     existing_info = get_personal_info(user_id)
-    weather = get_weather(get_location())
+    lat, lon = get_location()
+    weather = get_weather(lat, lon) if lat is not None and lon is not None else None
 
     # 개인정보가 없으면 안내 메시지 출력
     if not existing_info:

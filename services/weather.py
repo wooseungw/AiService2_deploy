@@ -30,12 +30,13 @@ def get_weather_streamlit():
     st.title("날씨 정보")
     location = st.text_input("위치를 입력하세요", "서울")
 
-    # 날씨 정보 가져오기
-    if location:
-        weather_info = get_weather(location)
+    # 위치 정보를 위도와 경도로 변환
+    lat, lon = get_location()
+    if lat is not None and lon is not None:
+        weather_info = get_weather(lat, lon)
 
         if weather_info:
-            st.write(f"위치: {weather_info['location']}")
+            st.write(f"위치: {location}")
             st.write(f"온도: {weather_info['temperature']}°C")
             st.write(f"날씨 상태: {weather_info['condition']}")
 
@@ -43,5 +44,7 @@ def get_weather_streamlit():
             add_weather_comments(weather_info)
         else:
             st.error("날씨 정보를 가져오지 못했습니다.")
+    else:
+        st.error("위치 정보를 가져오지 못했습니다.")
 
 get_weather_streamlit()
