@@ -2,14 +2,12 @@ import streamlit as st
 from db import get_user_images, get_image_attributes
 import json
 import pandas as pd
-import cv2
-import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 def draw_bbox_on_image(image_path, bboxes, categories):
     # 이미지 로드
-    img = cv2.imread(image_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = Image.open(image_path).convert("RGB")
+    draw = ImageDraw.Draw(img)
     
     # 카테고리별 색상 정의
     category_colors = {
@@ -27,11 +25,11 @@ def draw_bbox_on_image(image_path, bboxes, categories):
         color = category_colors.get(category.lower(), (158, 158, 158))
         
         # 박스 그리기
-        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
         # 카테고리 텍스트 추가
-        cv2.putText(img, category, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+        draw.text((x1, y1-10), category, fill=color)
     
-    return Image.fromarray(img)
+    return img
 
 def render():
     st.title("저장된 의류 속성 정보 보기")
