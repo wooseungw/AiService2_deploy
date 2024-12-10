@@ -52,17 +52,21 @@ def get_location():
 
 def get_weather(location):
     try:
-        # OpenWeatherMap API를 사용하여 날씨 정보 가져오기
-        url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={API_KEY}&units=metric&lang=kr"
+        # Weatherstack API를 사용하여 날씨 정보 가져오기
+        url = f"http://api.weatherstack.com/current?access_key={API_KEY}&query={location}"
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
-            weather_info = {
-                'location': data['name'],
-                'temperature': data['main']['temp'],
-                'condition': data['weather'][0]['description']
-            }
-            return weather_info
+            if 'current' in data:
+                weather_info = {
+                    'location': data['location']['name'],
+                    'temperature': data['current']['temperature'],
+                    'condition': data['current']['weather_descriptions'][0]
+                }
+                return weather_info
+            else:
+                st.error("날씨 정보를 가져오는 데 실패했습니다.")
+                return None
         else:
             st.error("날씨 정보를 가져오는 데 실패했습니다.")
             return None
