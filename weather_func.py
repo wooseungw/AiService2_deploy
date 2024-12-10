@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
+}
+
 mapping = {
     'Seoul': '서울',
     'Busan': '부산',
@@ -46,7 +50,6 @@ def get_location():
 
 class NaverWeatherCrawler:
     def __init__(self, location):
-        self.base_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query="
         self.base_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query="
         
         self.location = location
