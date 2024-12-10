@@ -32,12 +32,12 @@ if 'chatbot' not in st.session_state:
         st.warning("개인정보가 없습니다. 개인정보를 입력해주세요.")
         existing_info = None
 
-    # GPT 챗봇 객체를 세션 상태에 저장
-    st.session_state.chatbot = GPT(
-        api_key=st.session_state.api_key,
-        user_info=existing_info,
-        weather=weather,
-    )
+# GPT 챗봇 객체를 세션 상태에 저장
+st.session_state.chatbot = GPT(
+    api_key=st.session_state.api_key,
+    user_info=existing_info,
+    weather=weather,
+)
 
 # 챗봇 페이지를 보여주는 함수
 def show_chatbot_page():
