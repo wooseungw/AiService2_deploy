@@ -1,8 +1,13 @@
 import requests
-from bs4 import BeautifulSoup
 import streamlit as st
 
+# secret.key 파일에서 키를 로드하는 함수
+def load_weather_key():
+    # secret.key 파일에서 키 로드
+    key = st.secrets["weather"]
+    return key
 
+API_KEY = load_weather_key()
 mapping = {
     'Seoul': '서울',
     'Busan': '부산',
@@ -45,36 +50,22 @@ def get_location():
         st.error("위치 정보를 가져오는 데 실패했습니다.")
         return None
 
-class NaverWeatherCrawler:
-    def __init__(self, location):
-        self.base_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query="
-        
-        self.location = location
-
-    def get_weather(self):
-        url = self.base_url + self.location + " 날씨"
+def get_weather(location):
+    try:
+        # OpenWeatherMap API를 사용하여 날씨 정보 가져오기
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={API_KEY}&units=metric&lang=kr"
         response = requests.get(url)
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            weather_info = self.parse_weather(soup)
+            data = response.json()
+            weather_info = {
+                'location': data['name'],
+                'temperature': data['main']['temp'],
+                'condition': data['weather'][0]['description']
+            }
             return weather_info
         else:
             st.error("날씨 정보를 가져오는 데 실패했습니다.")
             return None
-
-    def parse_weather(self, soup):
-        weather = {}
-        temp_element = soup.find('div', {'class': 'temperature_text'})
-        condition_element = soup.find('span', {'class': 'weather before_slash'})
-        location_element = soup.find('h2', {'class': 'title'})
-
-        weather['temperature'] = temp_element.text if temp_element else 'N/A'
-        weather['temperature'] = weather['temperature'].replace('현재 온도', '').replace('°', '').strip()
-        weather['condition'] = condition_element.text if condition_element else 'N/A'
-        weather['location'] = location_element.text if location_element else 'N/A'
-        return weather
-
-def get_weather(location):
-    crawler = NaverWeatherCrawler(location=location)
-    return crawler.get_weather()
-
+    except requests.RequestException:
+        st.error("날씨 정보를 가져오는 데 실패했습니다.")
+        return None
